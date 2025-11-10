@@ -1,0 +1,4 @@
+*.vhd
+*.vhdx
+__pycache__/
+*.pyc
