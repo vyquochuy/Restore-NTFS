@@ -240,7 +240,7 @@ def read_clusters(drive_path, clusters, bytes_per_cluster):
 def main():
     # --- ĐÃ SỬA: CODE CỨNG Ổ ĐĨA D: ---
     # Đã xóa phần input() và kiểm tra drive_path
-    drive_path = r"\\.\D:" 
+    drive_path = r"\\.\E:" 
     
     print(f"*** Bắt đầu quá trình phân tích và khôi phục ổ đĩa: {drive_path} ***\n")
     

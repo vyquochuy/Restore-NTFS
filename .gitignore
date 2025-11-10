@@ -2,3 +2,4 @@
 *.vhdx
 __pycache__/
 *.pyc
+~$*.pptx    
