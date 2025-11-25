@@ -2,7 +2,7 @@ import struct
 import sys
 
 # -------------------------------
-VHD_FILE_PATH = r"D:\anToanVaPhucHoi\demo_2.vhd"
+VHD_FILE_PATH = r"D:\anToanVaPhucHoi\demo1.vhd"
 # -------------------------------
 
 SECTOR_SIZE = 512

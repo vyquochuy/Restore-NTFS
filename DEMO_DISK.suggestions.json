@@ -1,0 +1,43 @@
+{
+  "image": "DEMO_DISK.vhd",
+  "candidates": [
+    {
+      "bytes_per_sector": 512,
+      "sectors_per_cluster": 8,
+      "bytes_per_cluster": 4096,
+      "total_sectors": 198655,
+      "mft_lcn": 8277,
+      "mftmirr_lcn": 2,
+      "clusters_per_file_record": -10,
+      "mft_byte_offset": 33902592,
+      "boot_lba": 128,
+      "sanity": "ok"
+    },
+    {
+      "bytes_per_sector": 512,
+      "sectors_per_cluster": 8,
+      "bytes_per_cluster": 4096,
+      "total_sectors": 198655,
+      "mft_lcn": 8277,
+      "mftmirr_lcn": 2,
+      "clusters_per_file_record": -10,
+      "mft_byte_offset": 33902592,
+      "boot_lba": 198783,
+      "sanity": "ok"
+    }
+  ],
+  "proposals": [
+    {
+      "start_lba": 128,
+      "num_sectors": 198655,
+      "type": 7,
+      "bootable": 0
+    },
+    {
+      "start_lba": 198783,
+      "num_sectors": 198655,
+      "type": 7,
+      "bootable": 0
+    }
+  ]
+}
