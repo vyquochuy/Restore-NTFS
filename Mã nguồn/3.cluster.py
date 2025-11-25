@@ -1,5 +1,6 @@
 import struct
 import re
+import os
 
 # ==========================================
 # HÀM HỖ TRỢ: TÍNH TOÁN OFFSET
@@ -99,7 +100,9 @@ def fix_list_records(vhd_path, record_list):
 # ==========================================
 # MAIN - CHƯƠNG TRÌNH CHÍNH
 # ==========================================
-vhd_file = r"D:\HuyMai\Y4-HK1\ATPHDL\midTerm\cluster\demo_cluster.vhd" 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+vhd_file = os.path.join(BASE_DIR, "demo.vhd")
+
 
 # BƯỚC 1: Tự động quét và lấy danh sách lỗi
 found_errors = scan_mft(vhd_file)

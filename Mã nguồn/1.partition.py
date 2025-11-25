@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# ntfs_partition_rebuild.py
+# partition.py
 # Mục đích: scan image for NTFS boot sectors, parse them, propose MBR partition entries,
 # optionally write a new MBR into a copy of the image.
 # CẢNH BÁO: Luôn làm việc trên bản sao. Không ghi lên device thật nếu không chắc.
