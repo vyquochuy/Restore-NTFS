@@ -69,7 +69,6 @@ def parse_boot_sector(bs):
 
         info["ClustersPerFileRecord"] = clusters_per_record
         info["MFT_Offset"] = info["MFT_LCN"] * info["BytesPerCluster"]
-        print("MFT_LCN:", info["MFT_LCN"])
         return info
     except Exception as e:
         print(f"[!] Lỗi khi phân tích boot sector: {e}")
@@ -101,7 +100,7 @@ def read_mft_records(drive_path, start_offset, record_size, max_records, output_
             flags = struct.unpack("<H", data[22:24])[0]
             deleted = not (flags & 0x0001)
 
-            # print(f"  [{i:04}] Hợp lệ | {'ĐÃ XÓA' if deleted else 'TỒN TẠI'} | Offset: {record_offset}")
+            # print(f"  [{i:04}]  Hợp lệ | {'ĐÃ XÓA' if deleted else 'TỒN TẠI'} | Offset: {record_offset}")
             valid_records.append(record_offset)
 
     with open(output_file, "w") as out_f:
@@ -143,7 +142,6 @@ def parse_file_name_attribute(record):
 
 def parse_data_attribute(record):
     """
-    *** HÀM MỚI ***
     Trích xuất danh sách cluster (data runs) từ thuộc tính 0x80 ($DATA).
     Trả về danh sách các tuple (LCN, ClusterCount).
     """
@@ -161,20 +159,18 @@ def parse_data_attribute(record):
             if attr_type == 0x80:  # $DATA attribute
                 non_resident_flag = record[attr_offset+8]
                 if non_resident_flag == 0:
-                    # Data is resident (nằm trong MFT), không thể khôi phục cách này
                     return None 
 
-                # Non-resident. Bắt đầu phân tích runlist.
                 runlist_offset = struct.unpack("<H", record[attr_offset+0x20:attr_offset+0x22])[0]
                 runlist_end = struct.unpack("<H", record[attr_offset+0x18:attr_offset+0x1A])[0] # Kích thước phân bổ
                 
                 clusters = []
                 current_lcn = 0
-                p = attr_offset + runlist_offset # Con trỏ chạy trong runlist
+                p = attr_offset + runlist_offset
                 
                 while p < attr_offset + runlist_end:
                     header_byte = record[p]
-                    if header_byte == 0x00: # Kết thúc runlist
+                    if header_byte == 0x00:
                         break
                     p += 1
                     
@@ -182,14 +178,12 @@ def parse_data_attribute(record):
                     offset_bytes = (header_byte >> 4) & 0x0F
                     
                     if p + len_bytes + offset_bytes > len(record):
-                        return None # Runlist bị hỏng
+                        return None
 
-                    # 1. Đọc số lượng cluster (run_length)
                     run_length_bytes = record[p : p + len_bytes]
                     run_length = int.from_bytes(run_length_bytes + b'\x00' * (8 - len_bytes), 'little')
                     p += len_bytes
                     
-                    # 2. Đọc LCN (run_offset)
                     run_offset_bytes = record[p : p + offset_bytes]
                     p += offset_bytes
                     
@@ -236,12 +230,8 @@ def read_clusters(drive_path, clusters, bytes_per_cluster):
         print(f"[!] Lỗi nghiêm trọng khi mở ổ đĩa để đọc cluster: {e}")
         return b""
 
-# --- HÀM CHÍNH (MAIN) ---
-
 def main():
-    # --- ĐÃ SỬA: CODE CỨNG Ổ ĐĨA D: ---
-    # Đã xóa phần input() và kiểm tra drive_path
-    drive_path = r"\\.\E:" 
+    drive_path = r"\\.\D:" 
     
     print(f"*** Bắt đầu quá trình phân tích và khôi phục ổ đĩa: {drive_path} ***\n")
     
@@ -249,14 +239,13 @@ def main():
     print("[+] --- GIAI ĐOẠN 1: PHÂN TÍCH BOOT SECTOR ---")
     sector_data = read_disk_sector(drive_path, 0, 512)
     if sector_data is None:
-        sys.exit(1) # Hàm read_disk_sector đã in lỗi
+        sys.exit(1)
 
     print("\n[+] --- Thông tin Boot Sector ---")
-    # (Phần còn lại của hàm main giữ nguyên...)
     
     print(f"\n*** Bắt đầu quá trình phân tích và khôi phục ổ đĩa: {drive_path} ***\n")
     
-    # --- GIAI ĐOẠN 1: PHÂN TÍCH BOOT SECTOR ---
+    # GIAI ĐOẠN 1: PHÂN TÍCH BOOT SECTOR
     print("[+] --- GIAI ĐOẠN 1: PHÂN TÍCH BOOT SECTOR ---")
     sector_data = read_disk_sector(drive_path, 0, 512)
     if sector_data is None:
@@ -269,10 +258,10 @@ def main():
         print("[!] Dừng lại do không phân tích được Boot Sector.")
         sys.exit(1)
 
-    print(f"  📄 OEM_ID               : {ntfs_info['OEM_ID']}")
-    print(f"  💾 BytesPerCluster      : {ntfs_info['BytesPerCluster']}")
-    print(f"  📏 BytesPerFileRecord   : {ntfs_info['BytesPerFileRecord']}")
-    print(f"  📌 MFT_Offset           : {ntfs_info['MFT_Offset']}")
+    print(f"  OEM_ID               : {ntfs_info['OEM_ID']}")
+    print(f"  BytesPerCluster      : {ntfs_info['BytesPerCluster']}")
+    print(f"  BytesPerFileRecord   : {ntfs_info['BytesPerFileRecord']}")
+    print(f"  MFT_Offset           : {ntfs_info['MFT_Offset']}")
 
     # --- GIAI ĐOẠN 2: QUÉT MFT ---
     print("\n[+] --- GIAI ĐOẠN 2: QUÉT MFT ---")
@@ -292,7 +281,7 @@ def main():
     print("\n[+] --- GIAI ĐOẠN 3: TÌM FILE ĐÃ XÓA VÀ CLUSTER DATA ---")
     print(f"  (Đọc {len(valid_record_offsets)} record từ file '{MFT_LIST_FILE}'...)\n")
     
-    found_deleted_files = [] # Danh sách động, thay thế cho list code cứng
+    found_deleted_files = []
     
     for offset in valid_record_offsets:
         record = read_disk_sector(drive_path, offset, ntfs_info['BytesPerFileRecord'])
@@ -307,16 +296,15 @@ def main():
         if deleted and name != "<không có tên>":
             print(f"  [ĐÃ XÓA] Tìm thấy: {name} (tại MFT offset {offset})")
             
-            # **NÂNG CẤP:** Tự động tìm cluster
             clusters = parse_data_attribute(record)
             
             if clusters:
                 print(f"    -> Tìm thấy data runs: {clusters}")
                 found_deleted_files.append({"name": name, "clusters": clusters, "offset": offset})
             #else:
-            #    print(f"    -> Không tìm thấy data runs (có thể file quá nhỏ hoặc bị ghi đè).")
+                #print(f"    -> Không tìm thấy data runs (có thể file quá nhỏ hoặc bị ghi đè).")
 
-    # --- GIAI ĐOẠN 4: KHÔI PHỤC FILE (TỰ ĐỘNG) ---
+    # GIAI ĐOẠN 4: KHÔI PHỤC FILE (TỰ ĐỘNG) ---
     print("\n[+] --- GIAI ĐOẠN 4: KHÔI PHỤC FILE TỰ ĐỘNG ---")
     
     if not found_deleted_files:
@@ -327,7 +315,7 @@ def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     print(f"[+] Tạo thư mục khôi phục tại: {os.path.abspath(OUTPUT_DIR)}")
     
-    # **NÂNG CẤP:** Chạy vòng lặp trên danh sách TỰ ĐỘNG tìm được
+    # Chạy vòng lặp trên danh sách TỰ ĐỘNG tìm được
     for file_info in found_deleted_files:
         file_name = file_info["name"]
         clusters = file_info["clusters"]
@@ -338,7 +326,7 @@ def main():
         if not safe_name:
             safe_name = f"recovered_file_offset_{offset}.dat" # Tên dự phòng
 
-        print(f"[+] Đang khôi phục {safe_name}...")
+        #print(f"[+] Đang khôi phục {safe_name}...")
         
         content = read_clusters(drive_path, clusters, ntfs_info['BytesPerCluster'])
         
@@ -353,15 +341,14 @@ def main():
             try:
                 with open(output_path, "wb") as out_file:
                     out_file.write(content)
-                print(f"  ✅ {safe_name} đã khôi phục vào {output_path}")
+                print(f"   {safe_name} đã được khôi phục thành công.")
             except Exception as e:
-                print(f"  ❌ Lỗi khi GHI file {safe_name}: {e}")
+                print(f"   Lỗi khi GHI file {safe_name}: {e}")
         else:
-            print(f"  ❌ Lỗi khi ĐỌC cluster cho file {safe_name}. (Nội dung trống)")
+            print(f"   Lỗi khi ĐỌC cluster cho file {safe_name}. (Nội dung trống)")
 
     print("\n[+] === HOÀN THÀNH TẤT CẢ CÁC GIAI ĐOẠN ===")
 
-# --- ĐIỂM BẮT ĐẦU CHẠY SCRIPT ---
 if __name__ == "__main__":
     main()
     
