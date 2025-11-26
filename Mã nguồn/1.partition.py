@@ -207,4 +207,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-# python partition.py --image DEMO_DISK.vhd --apply --out DISK_FIXED.vhd
+# python partition.py --image partition.vhd --apply --out DISK_FIXED.vhd

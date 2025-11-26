@@ -1,0 +1,9 @@
+Code sử dụng Python Standard Library (os, struct, sys, re, json, argparse, string)
+Yêu cầu: Python >= 3.6
+
+Can chinh sua duong dan file `.vhd` hoac ten o dia (vi du: `\\.\D:`) trong code truoc khi chay
+
+chạy 1.partition.py bằng cách sử dụng cmd ở quyền admin: python partition.py --image partition.vhd --apply --out DISK_FIXED.vhd
+
+khi test phần dữ liệu bị xóa cần Mount file VHD ra 1 ổ đĩa trên windows (ví dụ ổ đĩa D:).
+- Mo file `4.recovery_file.py`, sua bien `drive_path` thanh ky tu o dia tuong ung (vi du: `r"\\.\D:"`).

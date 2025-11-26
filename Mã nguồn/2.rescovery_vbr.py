@@ -4,7 +4,7 @@ import os
 
 # -------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-VHD_FILE_PATH = os.path.join(BASE_DIR, "demo.vhd")
+VHD_FILE_PATH = os.path.join(BASE_DIR, "demo_vbr.vhd")
 # -------------------------------
 
 SECTOR_SIZE = 512

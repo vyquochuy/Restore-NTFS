@@ -101,7 +101,7 @@ def fix_list_records(vhd_path, record_list):
 # MAIN - CHƯƠNG TRÌNH CHÍNH
 # ==========================================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-vhd_file = os.path.join(BASE_DIR, "demo.vhd")
+vhd_file = os.path.join(BASE_DIR, "cluster.vhd")
 
 
 # BƯỚC 1: Tự động quét và lấy danh sách lỗi
